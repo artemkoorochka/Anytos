@@ -5,6 +5,17 @@
 
     window.saleBasket = {
 
+        catalog: {
+            id: "#basket"
+        },
+
+        scroll: {
+            id: "#basket-total-top",
+            head: "#basket-total-thead",
+            class: "stiky",
+            docTop: 0,
+            navTop: 0
+        },
 
         // top panel
         setScrollTop: function () {
