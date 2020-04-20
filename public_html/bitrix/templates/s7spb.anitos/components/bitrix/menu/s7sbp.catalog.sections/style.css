@@ -1,0 +1,19 @@
+#s7sbp-catalog-sections{
+    background-color: #fff;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 26px;
+}
+#s7sbp-catalog-sections a.d-block{
+    text-decoration: none;
+    font-size: 15px;
+    color: #0c0d0e;
+}
+#s7sbp-catalog-sections a.d-block:hover{
+    background-color: #ce139e;
+    color: #fff;
+}
+
+/**
+  * Import
+  */
