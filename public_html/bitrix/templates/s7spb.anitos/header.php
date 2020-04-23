@@ -179,9 +179,10 @@ Asset::getInstance()->addJs(SITE_TEMPLATE_PATH."/assets/js/app.js");
                         <div class="text-13">Избранное</div>
                     </div>
                     <div class="col col-auto text-center position-relative">
-                        <div id="cart-informer-count">0</div>
-                        <i class="icon icon-cart"></i>
-                        <div class="text-13">Корзина</div>
+                        <?$APPLICATION->IncludeComponent("bitrix:sale.basket.basket.line", "anitos", Array(
+                            ),
+                            false
+                        );?>
                     </div>
 
                 </div>
