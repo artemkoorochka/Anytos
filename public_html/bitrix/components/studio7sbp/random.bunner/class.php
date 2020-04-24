@@ -19,6 +19,28 @@ class randomBunner extends CBitrixComponent
      */
     public function loadBunner()
     {
+        $bunner = ElementTable::getList([
+            "filter" => [
+                "IBLOCK_ID" => $this->arParams["IBLOCK_ID"],
+                "ACTIVE" => "Y"
+            ],
+            "select" => [
+                "ID",
+                "IBLOCK_ID",
+                "DETAIL_PICTURE",
+                "PREVIEW_PICTURE"
+            ]
+        ]);
+        if($bunner = $bunner->fetch()){
+            if($bunner["DETAIL_PICTURE"] <= 0){
+                if($bunner["PREVIEW_PICTURE"] > 0){
+                    $bunner["DETAIL_PICTURE"] = $bunner["PREVIEW_PICTURE"];
+                }
+            }
+            if($bunner["DETAIL_PICTURE"] > 0){
+                $bunner["DETAIL_PICTURE"] = CFile::GetFileArray($bunner["DETAIL_PICTURE"]);
+            }
+        }
         $this->_bunner = $bunner;
     }
 
