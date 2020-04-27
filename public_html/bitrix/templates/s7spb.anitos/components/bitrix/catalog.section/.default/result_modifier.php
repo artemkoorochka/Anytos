@@ -1,84 +1,52 @@
 <?
 /**
- * @var CBitrixComponentTemplate $this
- * @var CatalogTopComponent $component
+ * @var array $arParams
+ * @var array $arResult
  */
-use Bitrix\Main\UserTable;
-if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
-/**
- * User personal discount
- */
-if($arParams["USER_ID"] > 0){
-    $arResult["PERSONAL_DISCOUNT"] = UserTable::getList(array(
-        "select" => array(
-            "ID",
-            "LOGIN",
-            "UF_DISCONT_TYPE",
-            "UF_DISCONT_VALUE"
-        ),
-        "filter" => array(
-            "ID" => $arParams["USER_ID"]
-        )
-    ))->fetch();
-}
+$arParams["RESIZE"] = [
+    "height" => 200,
+    "width" => 200
+];
 
-if(
-    $arResult["PERSONAL_DISCOUNT"]["UF_DISCONT_VALUE"] > 0 &&
-    is_numeric($arResult["PERSONAL_DISCOUNT"]["UF_DISCONT_VALUE"]) &&
-    ($arResult["PERSONAL_DISCOUNT"]["UF_DISCONT_TYPE"] == 2 || $arResult["PERSONAL_DISCOUNT"]["UF_DISCONT_TYPE"] == 1)
-){
-    foreach ($arResult['ITEMS'] as &$item) {
-        switch ($arResult["PERSONAL_DISCOUNT"]["UF_DISCONT_TYPE"]){
-            case 1:
-                $discountPercent = $arResult["PERSONAL_DISCOUNT"]["UF_DISCONT_VALUE"];
-                $discountPrice = $item["MIN_PRICE"]["VALUE"] - ($item["MIN_PRICE"]["VALUE"] * $arResult["PERSONAL_DISCOUNT"]["UF_DISCONT_VALUE"] / 100);
-                break;
-            case 2:
-                //$discountPercent = (-1) * $arResult["PERSONAL_DISCOUNT"]["UF_DISCONT_VALUE"];
-                $discountPercent = 0;
-                $discountPrice = $item["MIN_PRICE"]["VALUE"] + ($item["MIN_PRICE"]["VALUE"] * $arResult["PERSONAL_DISCOUNT"]["UF_DISCONT_VALUE"] / 100);
-                break;
+if(!empty($arResult["ITEMS"])){
+    foreach ($arResult["ITEMS"] as $key=>$arElement){
+
+        // bitrix/templates/s7spb.anitos/images/no_image200.jpg
+
+        if(is_array($arElement["PREVIEW_PICTURE"])){
+            if($arElement["DETAIL_PICTURE"] > 0){
+                $arElement["PREVIEW_PICTURE"] = $arElement["DETAIL_PICTURE"];
+            }
+        }
+        else{
+            if(is_array($arElement["DETAIL_PICTURE"])){
+                $arElement["PREVIEW_PICTURE"] = $arElement["DETAIL_PICTURE"];
+            }
         }
 
-        $discountDiff = $item["MIN_PRICE"]["VALUE"] - $discountPrice;
 
-        $discountDiffFormatted = CurrencyFormat($discountDiff, $item["MIN_PRICE"]["CURRENCY"]);
-        $discountPriceFormatted = CurrencyFormat($discountPrice, $item["MIN_PRICE"]["CURRENCY"]);
-
-        foreach ($item["PRICES"] as $keyPriceCode => $aPriceItem) {
-            $item["PRICES"][$keyPriceCode]["DISCOUNT_VALUE_VAT"] = $discountPrice;
-            $item["PRICES"][$keyPriceCode]["DISCOUNT_VALUE_NOVAT"] = $discountPrice;
-            $item["PRICES"][$keyPriceCode]["ROUND_VALUE_VAT"] = $discountPrice;
-            $item["PRICES"][$keyPriceCode]["ROUND_VALUE_NOVAT"] = $discountPrice;
-            $item["PRICES"][$keyPriceCode]["UNROUND_DISCOUNT_VALUE"] = $discountPrice;
-            $item["PRICES"][$keyPriceCode]["DISCOUNT_VALUE"] = $discountPrice;
-            $item["PRICES"][$keyPriceCode]["DISCOUNT_DIFF"] = $discountDiff;
-            $item["PRICES"][$keyPriceCode]["DISCOUNT_DIFF_PERCENT"] = $discountPercent;
-
-            $item["PRICES"][$keyPriceCode]["PRINT_DISCOUNT_VALUE_NOVAT"] = $discountPriceFormatted;
-            $item["PRICES"][$keyPriceCode]["PRINT_DISCOUNT_VALUE_VAT"] = $discountPriceFormatted;
-            $item["PRICES"][$keyPriceCode]["PRINT_DISCOUNT_VALUE"] = $discountPriceFormatted;
-            $item["PRICES"][$keyPriceCode]["PRINT_DISCOUNT_DIFF"] = $discountDiffFormatted;
+        if(is_array($arElement["PREVIEW_PICTURE"])){
+            // Resize
+            $arElement["PREVIEW_PICTURE"] = CFile::ResizeImageGet(
+                $arElement["PREVIEW_PICTURE"]["ID"],
+                $arParams["RESIZE"],
+                BX_RESIZE_IMAGE_EXACT,
+                false
+            );
+            $arElement["PREVIEW_PICTURE"] = [
+                "SRC" => $arElement["PREVIEW_PICTURE"]["src"],
+                "HEIGHT" => $arParams["RESIZE"]["height"],
+                "WIDTH" => $arParams["RESIZE"]["width"]
+            ];
+        }else{
+            $arElement["PREVIEW_PICTURE"] = [
+                "SRC" => SITE_TEMPLATE_PATH . "/images/no_image200.jpg",
+                "TITLE" => $arElement["NAME"],
+                "ALT" => "..."
+            ];
         }
 
-        $item["MIN_PRICE"] = $item["PRICES"]["BASE"];
-
-        foreach ($item["ITEM_PRICES"] as $keyPriceId => $aPriceItem) {
-            $item["ITEM_PRICES"][$keyPriceId]["UNROUND_PRICE"] = $discountPrice;
-            $item["ITEM_PRICES"][$keyPriceId]["PRICE"] = $discountPrice;
-            $item["ITEM_PRICES"][$keyPriceId]["DISCOUNT"] = $discountDiff;
-            $item["ITEM_PRICES"][$keyPriceId]["PERCENT"] = $discountPercent;
-
-            $item["ITEM_PRICES"][$keyPriceId]["RATIO_PRICE"] = $discountPrice;
-            $item["ITEM_PRICES"][$keyPriceId]["PRINT_PRICE"] = $discountPriceFormatted;
-            $item["ITEM_PRICES"][$keyPriceId]["PRINT_RATIO_PRICE"] = $discountPriceFormatted;
-            $item["ITEM_PRICES"][$keyPriceId]["PRINT_DISCOUNT"] = $discountDiffFormatted;
-            $item["ITEM_PRICES"][$keyPriceId]["RATIO_DISCOUNT"] = $discountDiff;
-            $item["ITEM_PRICES"][$keyPriceId]["PRINT_RATIO_DISCOUNT"] = $discountDiffFormatted;
-        }
+        $arResult["ITEMS"][$key]["PREVIEW_PICTURE"] = $arElement["PREVIEW_PICTURE"];
     }
 }
-
-$component = $this->getComponent();
-$arParams = $component->applyTemplateModifications();
