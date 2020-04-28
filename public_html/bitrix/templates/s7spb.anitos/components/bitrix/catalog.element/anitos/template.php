@@ -87,8 +87,7 @@ if (!function_exists('ForumNumberWordEndings'))
 ?>
 
 <div class="s7spb-row py5">
-    <div class="s7spb-col"
-         id="anitos-catalog-element-photos">
+    <div class="s7spb-col" id="anitos-catalog-element-photos">
 
         <?if(count($arResult['MORE_PHOTO']) > 1):?>
             <!--- START SLIDER --->
