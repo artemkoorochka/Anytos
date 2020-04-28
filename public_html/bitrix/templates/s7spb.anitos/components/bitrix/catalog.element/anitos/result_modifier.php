@@ -39,6 +39,7 @@ if(is_array($arResult["PREVIEW_PICTURE"])){
     ];
 }
 
+/*
 if(is_array($arResult["DETAIL_PICTURE"])){
     $i++;
     for($i; $i < 5; $i++){
@@ -52,17 +53,19 @@ if(is_array($arResult["DETAIL_PICTURE"])){
     }
 }
 
-### TODO END Emulation
-
 if(empty($arResult["MORE_PHOTO"])) {
 	$arResult['MORE_PHOTO'][] = $arEmptyPreview;
 }
+*/
+
+
+
 
 $arResult["DETAIL_PAGE_URL"] = "/catalog/section/" . $arResult["ID"] . "/";
 $arResult["DETAIL_TEXT"] = unserialize($arResult["~DETAIL_TEXT"]);
 
 
-// <editor-fold defaultstate="collapsed" desc="# Send out data from cache. Cach this out on epilog">
+// <editor-fold defaultstate="s7spb-collapsed" desc="# Send out data from cache. Cach this out on epilog">
 
 /**
  * Send out vendor property
