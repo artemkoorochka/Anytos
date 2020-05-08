@@ -1,12 +1,8 @@
 <?
 
 use Bitrix\Catalog\PriceTable;
-use Bitrix\Main\Loader,
-    Bitrix\Main\Localization\Loc;
 
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
-Loc::loadLanguageFile(__FILE__);
-
 
 /**
  *
@@ -72,27 +68,3 @@ $result["CURRENCIES_FORMAT"] = array();
 foreach ($result["CURRENCIES"] as $currency){
     $result["CURRENCIES_FORMAT"][$currency["CURRENCY"]] = $currency["FORMAT"]["FORMAT_STRING"];
 }
-
-// get iblock elements data
-
- if(empty($ID) && Loader::includeModule("iblock")){
-     $result["ELEMENTS"] = [];
-     $elements = CIBlockElement::GetList(
-         [],
-         [
-             "IBLOCK_TYPE" => "marketplace",
-             "IBLOCK_ID" => "2",
-             "ID" => $ID
-         ],
-         false,
-         false,
-         [
-             "ID",
-             "PROPERTY_ARTICLE"
-         ]
-     );
-     d($elements->SelectedRowsCount());
-     while($element = $elements->Fetch()){
-         $result["ELEMENTS"][$element["ID"]] = $element;
-     }
- }
