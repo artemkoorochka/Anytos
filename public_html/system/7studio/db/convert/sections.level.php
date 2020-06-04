@@ -23,14 +23,27 @@ $arParams = [
 
 d($arParams);
 
-$sections = SectionTable::getList([
-    "filter" => $arParams,
-    "select" => ["ID", "NAME", "DEPTH_LEVEL", "DEPTH_LEVEL"]
-]);
 
-while ($section = $sections->fetch())
+$entity = \Bitrix\Iblock\Model\Section::compileEntityByIblock($arParams["IBLOCK_ID"]);
+
+
+
+$rsSection = $entity::getList(array(
+
+    "filter" => $arParams,
+
+    "select" => array("ID", "NAME", "UF_PARENT"),
+
+));
+
+
+
+while($arSection=$rsSection->Fetch())
+
 {
-    $arResult[] = $section;
+
+    $arResult[] = $arSection;
+
 }
 
 d($arResult);
